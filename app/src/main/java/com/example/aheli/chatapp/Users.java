@@ -4,6 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,9 +32,27 @@ public class Users extends AppCompatActivity {
 
     ListView usersList;
     TextView noUsersText;
-    ArrayList<String> al = new ArrayList<>();
+    ArrayList<String> users = new ArrayList<>();
     int totalUsers = 0;
     ProgressDialog pd;
+    android.support.v7.widget.Toolbar toolbar;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        switch (item.getItemId()) {
+            case R.id.settings:
+                Log.i("item clicked", "settings clicked");
+                Intent intent = new Intent(getApplicationContext(), Settings.class);
+                startActivity(intent);
+                finish();
+                return true;
+
+            default:
+                return false;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +61,9 @@ public class Users extends AppCompatActivity {
 
         usersList = (ListView)findViewById(R.id.usersList);
         noUsersText = (TextView)findViewById(R.id.noUsersText);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         pd = new ProgressDialog(Users.this);
         pd.setMessage("Loading...");
@@ -63,7 +89,7 @@ public class Users extends AppCompatActivity {
         usersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                UserDetails.chatWith = al.get(position);
+                UserDetails.chatWith = users.get(position);
                 startActivity(new Intent(Users.this, Chat.class));
             }
         });
@@ -80,7 +106,7 @@ public class Users extends AppCompatActivity {
                 key = i.next().toString();
 
                 if(!key.equals(UserDetails.username)) {
-                    al.add(key);
+                    users.add(key);
                 }
 
                 totalUsers++;
@@ -97,7 +123,7 @@ public class Users extends AppCompatActivity {
         else{
             noUsersText.setVisibility(View.GONE);
             usersList.setVisibility(View.VISIBLE);
-            usersList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, al));
+            usersList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, users));
         }
 
         pd.dismiss();
